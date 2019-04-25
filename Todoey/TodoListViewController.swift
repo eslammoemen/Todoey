@@ -4,29 +4,35 @@
 //  Copyright © 2018 Eslam Moemen. All rights reserved.
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController{
 
     var itemArray = [Item]()
-    let defaults = UserDefaults.standard
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-         if let item = defaults.array(forKey: "todoListArray") as? [Item]{
-            itemArray = item
-        }
         
-        let item1 = Item()
-        item1.title = "Find Migos"
-        itemArray.append(item1)
-        item1.done = true
-       
-        let item2 = Item()
-        item2.title = "Call Sia"
-        itemArray.append(item2)
-
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "Entity", in: context)
+        let dataItems = NSManagedObject(entity: entity!, insertInto: context)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        //    if let item = defaults.array(forKey: "todoListArray") as? [Item]{
+      //      itemArray = item
+      //  }
+        
+        
         
     }
     
@@ -63,7 +69,7 @@ class TodoListViewController: UITableViewController{
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        
-        print(itemArray[indexPath.row])
+        //print(itemArray[indexPath.row])
         
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -99,12 +105,27 @@ class TodoListViewController: UITableViewController{
         let alert = UIAlertController(title: "Add Item Todoey", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-            let newItem = Item()
             newItem.title = textField.text!
             
             self.itemArray.append(newItem)
             self.tableView.reloadData()
-            self.defaults.set(self.itemArray, forKey: "todoListArray")
+
+            let encoder = PropertyListEncoder()
+            
+            do {
+               
+                let data = try encoder.encode(self.itemArray)
+                try data.write(to: self.dataFilePath!)
+                
+            } catch {
+                print("Error Encoding item, \(error)")
+                
+            }
+            
+            
+            
+            
+            
         }
         
         
